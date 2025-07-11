@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.2
   magic_sdk: ^6.0.1
   image_picker: ^1.1.2
@@ -22,12 +24,16 @@ dependencies:
   url_launcher: ^6.3.2
   
   html: ^0.15.4
+  intl: ^0.20.2
+  supabase_flutter: ^2.9.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/

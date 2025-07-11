@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:migrantconnectapp/map.dart'; // Import the MapPage
 import 'package:flutter_map/flutter_map.dart'; // Import flutter_map for the preview
 import 'package:latlong2/latlong.dart'; // Import latlong2 for LatLng
+import 'package:migrantconnectapp/jobmarket.dart'; // Import Jobmarket
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -137,7 +138,11 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.work),
               title: const Text('Find Jobs'),
               onTap: () {
-                // TODO: Implement find jobs page navigation
+                // Navigate to Jobmarket
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Jobmarket()),
+                );
               },
             ),
             ListTile(
@@ -153,9 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () {
                 // Navigate to EmergencyContactsPage
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EmergencyContactsPage()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EmergencyContactsPage()),
+                );
               },
             ),
              ListTile(

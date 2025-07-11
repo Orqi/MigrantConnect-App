@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:migrantconnectapp/login.dart';
 import 'package:migrantconnectapp/pages/home.dart';
 import 'package:migrantconnectapp/pages/profile.dart';
 import 'package:migrantconnectapp/map.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'l10n/app_localizations.dart'; // 🌐 Your custom localization file
 
 final magic = Magic("pk_live_845610B169B276D7");
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Initialize Supabase (replace with your actual URL and anonKey)
+  await Supabase.initialize(
+    url: 'https://gqxgsgxvgutktndosfah.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxeGdzZ3h2Z3V0a3RuZG9zZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyNDY4MzQsImV4cCI6MjA2NzgyMjgzNH0.AkR1K1mqrnZpD6Qf13PCZhWR2lc9PwQS2XnW7SaTVRc',
+  );
+
   Magic.instance = magic;
+
   runApp(const MyApp());
 }
 
@@ -26,39 +37,54 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // 🚀 Auto-redirect based on login status
     magic.user.isLoggedIn().then((isLoggedIn) {
-      if (isLoggedIn) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _navigatorKey.currentState?.pushReplacementNamed('/home');
-        });
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _navigatorKey.currentState?.pushReplacementNamed('/login');
-        });
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigatorKey.currentState?.pushReplacementNamed(
+          isLoggedIn ? '/home' : '/login',
+        );
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Migrant Connect',
       debugShowCheckedModeBanner: false,
-      title: 'Magic Login Counterpart',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'Inter',
-        useMaterial3: true,
-      ),
       navigatorKey: _navigatorKey,
+
+      theme: ThemeData(
+        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        fontFamily: 'Inter',
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+
+      // 🌐 Localization
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('hi'), // Hindi
+        Locale('ml'), // Malayalam
+      ],
+
+      // 🚦 Navigation
       initialRoute: '/',
       routes: {
         '/': (context) => _buildAuthSwitcher(),
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
-         '/map': (context) => const MapPage(),
+        '/map': (context) => const MapPage(),
       },
+
+      // 🧙 Magic relayer
       builder: (context, child) {
         return Stack(
           children: [
@@ -70,22 +96,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // 🛂 Show loading or switch to screen
   Widget _buildAuthSwitcher() {
     return FutureBuilder<bool>(
       future: magic.user.isLoggedIn(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         } else {
-          if (snapshot.hasData && snapshot.data == true) {
-            return const HomeScreen();
-          } else {
-            return const LoginScreen();
-          }
+          return snapshot.data == true
+              ? const HomeScreen()
+              : const LoginScreen();
         }
       },
     );
