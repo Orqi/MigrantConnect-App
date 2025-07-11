@@ -7,6 +7,7 @@ import 'package:migrantconnectapp/pages/profile.dart';
 import 'package:migrantconnectapp/map.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'l10n/app_localizations.dart'; // 🌐 Your custom localization file
+import 'package:migrantconnectapp/jobmarket.dart'; // <--- Import your jobmarket.dart file
 
 final magic = Magic("pk_live_845610B169B276D7");
 
@@ -27,12 +28,24 @@ Future<void> main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  // Static method to easily access and change locale from anywhere
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  Locale? _locale; // Make it nullable to indicate no explicit choice yet
+
+  // Method to set the app's locale
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
+    });
+  }
 
   @override
   void initState() {
@@ -71,8 +84,9 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en'), // English
         Locale('hi'), // Hindi
-        Locale('ml'), // Malayalam
+        // Locale('ml'), // REMOVED Malayalam
       ],
+      locale: _locale, // <--- Use the state-managed locale here
 
       // 🚦 Navigation
       initialRoute: '/',
@@ -82,6 +96,11 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/map': (context) => const MapPage(),
+        '/job_market_page': (context) => const JobMarketPage(), // <--- Add this new route for your Job Market
+        '/landowner': (context) => const LandOwnerPage(), // Add this if LandOwnerPage is not directly navigable from JobMarketPage's routes
+        '/job_details': (context) => JobDetailsPage( // Add this if JobDetailsPage is not directly navigable from JobMarketPage's routes
+              job: ModalRoute.of(context)!.settings.arguments as Job,
+            ),
       },
 
       // 🧙 Magic relayer

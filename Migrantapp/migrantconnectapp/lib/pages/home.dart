@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
-import 'package:migrantconnectapp/main.dart';
+import 'package:migrantconnectapp/main.dart'; // Import main.dart to access MyApp
 import 'package:migrantconnectapp/pages/emergencycontacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:migrantconnectapp/map.dart'; // Import the MapPage
 import 'package:flutter_map/flutter_map.dart'; // Import flutter_map for the preview
 import 'package:latlong2/latlong.dart'; // Import latlong2 for LatLng
-import 'package:migrantconnectapp/jobmarket.dart'; // Import Jobmarket
+// No longer need to import 'jobmarket.dart' if navigating by named route directly
+// import 'package:migrantconnectapp/jobmarket.dart'; // This import can be removed if not directly instantiating JobMarketPage
+import 'package:migrantconnectapp/l10n/app_localizations.dart'; // Import AppLocalizations
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,23 +97,69 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Language switch dialog logic
+  void _showLanguagePickerDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)!.changeLanguage), // Use localized string
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: AppLocalizations.supportedLocales.map((locale) {
+              String languageName;
+              switch (locale.languageCode) {
+                case 'en':
+                  languageName = 'English';
+                  break;
+                case 'hi':
+                  languageName = 'हिंदी';
+                  break;
+                default:
+                  languageName = locale.languageCode;
+              }
+              return ListTile(
+                title: Text(languageName),
+                onTap: () {
+                  // Set the new locale using the static method from MyApp
+                  MyApp.of(context)?.setLocale(locale);
+                  Navigator.of(dialogContext).pop(); // Close the dialog
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Access localized strings
+    final appLocalizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome'),
+        title: Text(appLocalizations.welcomeMessage), // Use localized title
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
+        actions: [
+          // Language Switch Icon
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: _showLanguagePickerDialog, // Call the dialog function
+            tooltip: appLocalizations.changeLanguage, // Localized tooltip
+          ),
+        ],
       ),
       drawer: Drawer(
         child: Column(
-          // Use Column to place logout at the bottom
           children: [
             DrawerHeader(
-              // Placeholder for app logo/image
-              child: Image.asset('migrant.jpg'), // Ensure this asset exists
+              // Assuming 'migrant.jpg' is in your assets
+              child: Image.asset('migrant.jpg'),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 25),
@@ -119,41 +167,44 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Profile'),
+              title: Text(appLocalizations.profile), // Localized
               onTap: () {
-                Navigator.of(context).pushNamed('/profile'); // Added navigation to profile
+                Navigator.of(context).pushNamed('/profile');
               },
             ),
             ListTile(
               leading: const Icon(Icons.help),
-              title: const Text('Help'),
+              title: Text(appLocalizations.help), // Localized
               onTap: () {
                 // TODO: Implement help page navigation
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.work),
-              title: const Text('Find Jobs'),
-              onTap: () {
-                // Navigate to Jobmarket
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Jobmarket()),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Help page not yet implemented.')),
                 );
               },
             ),
             ListTile(
+              leading: const Icon(Icons.work),
+              title: Text(appLocalizations.findJobs), // Localized
+              onTap: () {
+                // *** IMPORTANT CHANGE HERE ***
+                // Navigate using the named route defined in main.dart
+                Navigator.pushNamed(context, '/job_market_page');
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.house),
-              title: const Text('Find Accommodation'), // Corrected typo
+              title: Text(appLocalizations.findAccommodation), // Localized
               onTap: () {
                 // TODO: Implement find accommodation page navigation
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Accommodation page not yet implemented.')),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.phone),
-              title: const Text('Emergency Contacts'),
+              title: Text(appLocalizations.emergencyContacts), // Localized
               onTap: () {
-                // Navigate to EmergencyContactsPage
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -161,18 +212,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            const Spacer(), // Use Spacer to push the logout button to the bottom
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: _handleLogout,
                 icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
+                label: Text(appLocalizations.logout), // Localized
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(
-                      double.infinity, 50), // Make the button full width
+                  minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   textStyle: const TextStyle(fontSize: 18),
@@ -186,35 +236,33 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: _isLoading
-            ? const CircularProgressIndicator() // Show loading indicator
+            ? const CircularProgressIndicator()
             : Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     width: double.infinity,
-                    height: 130, // Set height as requested
+                    height: 130,
                     decoration: BoxDecoration(
-                      // Enhanced background with a subtle gradient
                       gradient: LinearGradient(
-                        colors: [Colors.teal.shade50, Colors.teal.shade200], // Changed to teal shades
+                        colors: [Colors.teal.shade50, Colors.teal.shade200],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2), // Increased opacity
-                          blurRadius: 15, // Increased blur
-                          spreadRadius: 2, // Added spread radius
-                          offset: const Offset(0, 8), // Adjusted offset
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: InkWell( // InkWell for ripple effect on tap
+                    child: InkWell(
                       borderRadius: BorderRadius.circular(20),
                       onTap: () {
-                        // Navigate to MapPage when the card is tapped
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MapPage()),
@@ -224,20 +272,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FlutterMap(
                             options: const MapOptions(
-                              initialCenter: LatLng(10.0, 76.0), // Center of Kerala
-                              initialZoom: 6.5, // Zoomed out for a broader view
-                              interactionOptions: InteractionOptions(flags: InteractiveFlag.none), // Disable interaction
+                              initialCenter: LatLng(10.0, 76.0),
+                              initialZoom: 6.5,
+                              interactionOptions: InteractionOptions(flags: InteractiveFlag.none),
                             ),
                             children: [
                               TileLayer(
                                 urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                                 subdomains: const ['a', 'b', 'c'],
-                                userAgentPackageName: 'com.migrantconnectapp', // Required for OpenStreetMap
+                                userAgentPackageName: 'com.migrantconnectapp',
                               ),
                               MarkerLayer(
                                 markers: [
                                   Marker(
-                                    point: const LatLng(10.1, 76.1), // Example marker point
+                                    point: const LatLng(10.1, 76.1),
                                     width: 30,
                                     height: 30,
                                     child: const Icon(Icons.location_pin, color: Colors.red, size: 30),
@@ -246,25 +294,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          // Overlay content to make it more attractive and indicate tap
                           Positioned.fill(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.2), // Semi-transparent overlay
+                                color: Colors.black.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Column(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.map_outlined, // A more stylized map icon
+                                  const Icon(
+                                    Icons.map_outlined,
                                     color: Colors.white,
                                     size: 40,
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Text(
-                                    'View Map',
-                                    style: TextStyle(
+                                    appLocalizations.viewMap, // Localized
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
