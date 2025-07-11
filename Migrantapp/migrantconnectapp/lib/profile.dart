@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchUserProfileFromBackend(String email) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.4:5001/user-profile?email=$email'),
+        Uri.parse('http://10.91.140.69/user-profile?email=$email'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://192.168.1.4:5001/upload'),
+        Uri.parse('http://10.91.140.69:5001/upload'),
       );
       request.files.add(await http.MultipartFile.fromPath(
         'file',
@@ -202,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.4:5001/register'),
+        Uri.parse('http://10.91.140.69:5001/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _user!.email!,
