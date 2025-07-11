@@ -17,8 +17,11 @@ class MigrantLawPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Inter-State Migrant Workmen Act')),
+     
+      appBar: AppBar(title: const Text('Inter-State Migrant Workmen Act'),
+      backgroundColor: Color(0xFF788DA0)),
       body: ListView.separated(
+        
         padding: const EdgeInsets.all(16),
         itemCount: keyPoints.length,
         separatorBuilder: (_, __) => const Divider(),

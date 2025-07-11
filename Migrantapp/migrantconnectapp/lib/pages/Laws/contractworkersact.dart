@@ -22,7 +22,9 @@ class ContractLabourActPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Contract Labour Act, 1970')),
+     
+      appBar: AppBar(title: const Text('Contract Labour Act, 1970'),
+      backgroundColor: Color(0xFF788DA0),),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

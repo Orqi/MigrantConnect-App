@@ -21,7 +21,9 @@ class MinimumWagesActPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Minimum Wages Act, 1948')),
+     
+      appBar: AppBar(title: const Text('Minimum Wages Act, 1948'),
+       backgroundColor: Color(0xFF788DA0),),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

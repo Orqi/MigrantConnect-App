@@ -21,7 +21,9 @@ class UnorganisedWorkersActPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Unorganised Workers’ Social Security Act')),
+      
+      appBar: AppBar(title: const Text('Unorganised Workers’ Social Security Act'),
+      backgroundColor: Color(0xFF788DA0),),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -15,8 +15,13 @@ class _LawsandschemesPageState extends State<LawsandschemesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 251, 220, 220),
       appBar: AppBar(
-        title: Text('Laws and Schemes'),
+        backgroundColor: Color(0xFF0D3466),
+        title: Text('Laws and Schemes',
+        style: TextStyle(
+          color: Colors.white
+        ),),
         centerTitle: true,
         
       ),
