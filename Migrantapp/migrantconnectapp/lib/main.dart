@@ -6,9 +6,11 @@ import 'package:migrantconnectapp/login.dart';
 import 'package:migrantconnectapp/pages/home.dart';
 import 'package:migrantconnectapp/pages/profile.dart';
 import 'package:migrantconnectapp/map.dart';
+import 'package:migrantconnectapp/pages/translate.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'l10n/app_localizations.dart'; // 🌐 Your custom localization file
-import 'package:migrantconnectapp/jobmarket.dart'; // <--- Import your jobmarket.dart file
+import 'package:migrantconnectapp/jobmarket.dart';
+import 'package:migrantconnectapp/pages/accomo.dart'; // <--- Import your jobmarket.dart file
 
 final magic = Magic("pk_live_845610B169B276D7");
 
@@ -93,17 +95,19 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => _buildAuthSwitcher(),
         '/login': (context) => const LoginScreen(),
+        '/accomo':(context)=> const AccomoScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/map': (context) => const MapPage(),
         '/job_market_page': (context) => const JobMarketPage(), // <--- Correctly referencing JobMarketPage
         '/landowner': (context) => const LandOwnerPage(),
+        '/translate': (context) => TranslateScreen(),
         '/job_details': (context) => JobDetailsPage(
               job: ModalRoute.of(context)!.settings.arguments as Job,
             ),
       },
 
-      // 🧙 Magic relayer
+      //  Magic relayer
       builder: (context, child) {
         return Stack(
           children: [

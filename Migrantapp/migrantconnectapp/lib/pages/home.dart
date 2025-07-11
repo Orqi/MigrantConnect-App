@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
           appLocalizations.welcomeMessage,
-          style: TextStyle(color: kcWhite, fontWeight: FontWeight.bold),
+          style: TextStyle(fontFamily: 'Monoton',color: kcWhite, fontWeight: FontWeight.bold),
         ),
         backgroundColor: kcPrimary,
         foregroundColor: kcWhite,
@@ -169,11 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 color: kcPrimary,
               ),
-              child: SizedBox(
-                width: double.infinity,
+              child: Center(
                 child: Image.asset(
-                  'assets/migrant.jpg',
-                  fit: BoxFit.cover,
+                  'assets/man.png',
+                  height: 150,  // Reduce height
+                  width: 150,   // Reduce width
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
@@ -382,9 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: cardWidth,
                                 height: cardHeight,
                                 onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Accommodation page not yet implemented.')),
-                                  );
+                                   Navigator.pushNamed(context, '/accomo');
                                 },
                               ),
                             ],
@@ -420,6 +419,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
       ),
+      floatingActionButton: FloatingActionButton(
+  onPressed: () {
+    Navigator.pushNamed(context, '/translate');
+  },
+  mini: true, // Makes the button smaller
+  backgroundColor: kcPrimary,
+  foregroundColor: kcWhite,
+  tooltip: appLocalizations.changeLanguage,
+  child: const Icon(Icons.translate),
+),
+floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

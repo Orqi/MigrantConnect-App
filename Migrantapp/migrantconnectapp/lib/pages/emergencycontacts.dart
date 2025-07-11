@@ -16,12 +16,23 @@ class EmergencyContactsPage extends StatelessWidget {
     {'nameKey': 'contactSeniorCitizenHelpline', 'number': '14567'},
   ];
 
+  // Define the updated color palette for a better look
+  static const Color primaryDarkBlue = Color(0xFF133764); // #133764
+  static const Color secondaryDarkBlue = Color(0xFF0D3466); // #0D3466
+  static const Color lightPeach = Color(0xFFF2B6B3); // #F2B6B3
+  static const Color lightestPeach = Color(0xFFFECBCC); // #FECBCC
+  static const Color greyishBlue = Color(0xFF788DA0); // #788DA0
+
   void _callNumber(String number) async {
     final Uri url = Uri.parse('tel:$number');
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       debugPrint('Could not open dialer for $number');
+      // Optionally, show a SnackBar or AlertDialog to the user
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Could not open dialer.')),
+      // );
     }
   }
 
@@ -30,16 +41,17 @@ class EmergencyContactsPage extends StatelessWidget {
     final appLocalizations = AppLocalizations.of(context)!; // Get localized strings
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 249, 242, 242),
+      backgroundColor: Colors.white, // White background for the scaffold
       appBar: AppBar(
-       title: Text(
+        title: Text(
           appLocalizations.emergencyContacts, // Localize the AppBar title
           style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold
+            color: lightPeach, // AppBar title color
+            fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 1, 116, 93),
+        backgroundColor: primaryDarkBlue, // AppBar background color
+        iconTheme: const IconThemeData(color: lightPeach), // Set back button color if present
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -51,14 +63,22 @@ class EmergencyContactsPage extends StatelessWidget {
             final String localizedContactName = _getLocalizedContactName(appLocalizations, contact['nameKey']!);
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0), // Increased vertical padding
               child: GestureDetector(
                 onTap: () => _callNumber(contact['number']!),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18), // Slightly more padding inside cards
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 94, 44, 73),
-                    borderRadius: BorderRadius.circular(12),
+                    color: lightestPeach, // Card background color - softer and more inviting
+                    borderRadius: BorderRadius.circular(15), // Slightly more rounded corners
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2), // Subtle shadow
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -67,14 +87,18 @@ class EmergencyContactsPage extends StatelessWidget {
                         child: Text(
                           localizedContactName, // Use the localized name here
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 19, // Slightly larger font for name
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: secondaryDarkBlue, // Text color for contact name - dark blue
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(Icons.phone, color: Color.fromARGB(255, 255, 139, 104)),
+                      const Icon(
+                        Icons.phone,
+                        color: primaryDarkBlue, // Phone icon color - dark blue for good contrast
+                        size: 26, // Slightly larger icon
+                      ),
                     ],
                   ),
                 ),
