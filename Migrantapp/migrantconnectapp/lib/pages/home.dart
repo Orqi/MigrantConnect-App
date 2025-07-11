@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
-import 'package:migrantconnectapp/main.dart'; 
-import 'package:migrantconnectapp/profile.dart'; 
+import 'package:migrantconnectapp/main.dart';
+import 'package:migrantconnectapp/pages/emergencycontacts.dart'; 
 import 'package:shared_preferences/shared_preferences.dart'; 
 
 class HomeScreen extends StatefulWidget {
@@ -88,12 +88,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome Home'),
+        title: const Text('Welcome'),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
+        
       ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(child: Image.asset('migrant.jpg'),
+            ),
+             Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Divider(color: Colors.tealAccent,height: 20,),
+                ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.help),
+              title: Text('Help'),
+              onTap: () {},
+            ),
+             ListTile(
+              leading: Icon(Icons.work),
+              title: Text('Find Jobs'),
+              onTap: () {},
+            ),
+             ListTile(
+              leading: Icon(Icons.house),
+              title: Text('Find Accomodation'),
+              onTap: () {},
+            ),
+            
+          ]
+             
+        ),
+        ),
+      
       body: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
