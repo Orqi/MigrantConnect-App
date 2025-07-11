@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchUserProfileFromBackend(String email) async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.96.83.193:5001/user-profile?email=$email'),
+        Uri.parse('https://teamrocket-2.onrender.com/user-profile?email=$email'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://10.96.83.193:5001/upload'),
+        Uri.parse('https://teamrocket-2.onrender.com/upload'),
       );
       request.files.add(await http.MultipartFile.fromPath(
         'file',
@@ -212,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     try {
       final response = await http.post(
-        Uri.parse('http://10.96.83.193:5001/register'),
+        Uri.parse('https://teamrocket-2.onrender.com/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _user!.email!,

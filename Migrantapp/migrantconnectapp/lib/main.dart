@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:migrantconnectapp/login.dart';
-import 'package:migrantconnectapp/home.dart';
-import 'package:migrantconnectapp/profile.dart';
+import 'package:migrantconnectapp/pages/home.dart';
+import 'package:migrantconnectapp/pages/profile.dart';
 
 final magic = Magic("pk_live_845610B169B276D7");
 

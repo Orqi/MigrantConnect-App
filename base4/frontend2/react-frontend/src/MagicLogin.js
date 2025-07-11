@@ -29,7 +29,7 @@ function MagicLogin() {
   const fetchUserProfileFromBackend = async (userEmail) => {
     try {
       console.log(`REACT: Attempting to fetch profile for ${userEmail}`);
-      const res = await fetch(`http://localhost:5001/user-profile?email=${userEmail}`);
+      const res = await fetch(`https://teamrocket-2.onrender.com/user-profile?email=${userEmail}`);
 
       if (res.ok) {
         const data = await res.json();
@@ -68,7 +68,7 @@ function MagicLogin() {
 
     try {
       console.log("REACT: Attempting image upload to backend...");
-      const res = await fetch("http://localhost:5001/upload", {
+      const res = await fetch("https://teamrocket-2.onrender.com/upload", {
         method: "POST",
         body: formData,
       });
@@ -100,7 +100,7 @@ function MagicLogin() {
       }
 
       console.log("REACT: Attempting to register identity with backend...");
-      const res = await fetch("http://localhost:5001/register", {
+      const res = await fetch("https://teamrocket-2.onrender.com/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
