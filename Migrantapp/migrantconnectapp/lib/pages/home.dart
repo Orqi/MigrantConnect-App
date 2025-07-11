@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:migrantconnectapp/main.dart';
-import 'package:migrantconnectapp/pages/emergencycontacts.dart'; 
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:migrantconnectapp/pages/emergencycontacts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
- 
+
   String? _userEmail;
   bool _isLoading = false;
 
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _userEmail = userMetadata.email;
         });
       } else {
-       
+
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     try {
       await magic.user.logout();
-    
+
       final prefs = await SharedPreferences.getInstance();
       if (_userEmail != null) {
         await prefs.remove(_userEmail!);
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
-        
+
       ),
       drawer: Drawer(
         child: ListView(
@@ -107,7 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: Icon(Icons.person),
               title: Text('Profile'),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed('/profile'); // Added navigation to profile
+              },
             ),
             ListTile(
               leading: Icon(Icons.help),
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
              ListTile(
               leading: Icon(Icons.house),
-              title: Text('Find Accomodation'),
+              title: Text('Find Accommodation'), // Corrected typo
               onTap: () {},
             ),
             ListTile(
@@ -133,10 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
             )
             
           ]
-             
+
         ),
         ),
-      
+
       body: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
@@ -149,23 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/profile'); // Navigate to profile
-                    },
-                    icon: const Icon(Icons.person),
-                    label: const Text('View Profile'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      textStyle: const TextStyle(fontSize: 18),
-                      elevation: 5,
-                      shadowColor: Colors.blueAccent.withOpacity(0.4),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // Removed the ElevatedButton.icon for 'View Profile' from here
                   ElevatedButton.icon(
                     onPressed: _handleLogout,
                     icon: const Icon(Icons.logout),
