@@ -3,6 +3,7 @@ import 'package:magic_sdk/magic_sdk.dart';
 import 'package:migrantconnectapp/login.dart';
 import 'package:migrantconnectapp/pages/home.dart';
 import 'package:migrantconnectapp/pages/profile.dart';
+import 'package:migrantconnectapp/map.dart';
 
 final magic = Magic("pk_live_845610B169B276D7");
 
@@ -56,6 +57,7 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
+         '/map': (context) => const MapPage(),
       },
       builder: (context, child) {
         return Stack(
