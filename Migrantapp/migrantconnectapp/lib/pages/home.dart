@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:migrantconnectapp/main.dart';
 import 'package:migrantconnectapp/pages/emergencycontacts.dart';
+import 'package:migrantconnectapp/pages/migrantlaw.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -134,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyContactsPage()));
               },
             ),
+            
             Spacer(), // Use Spacer to push the logout button to the bottom
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -167,6 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> MigrantLawPage() ));
+                    }, 
+                    label: Text('Migrant Law'),
+                    )
                   // Removed the ElevatedButton.icon for 'View Profile' from here
                   // The logout button is now in the drawer
                 ],

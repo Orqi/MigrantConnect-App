@@ -11,7 +11,9 @@ class EmergencyContactsPage extends StatelessWidget {
     {'name': 'AASRA (Suicide Prevention)', 'number': '9152987821'},
     {'name': 'Ex-Servicemen Welfare (ECHS)', 'number': '1800111971'},
     {'name': 'Senior Citizen Helpline', 'number': '14567'},
+    
   ];
+ EmergencyContactsPage({super.key});
 
   void _callNumber(String number) async {
     final Uri url = Uri.parse('tel:$number'); // Opens dialer without calling
@@ -35,7 +37,7 @@ class EmergencyContactsPage extends StatelessWidget {
           ),
           
         ),
-        backgroundColor: Color.fromARGB(255, 1, 116, 93),
+        backgroundColor: Color(0xFF0D3466),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -50,7 +52,7 @@ class EmergencyContactsPage extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 94, 44, 73),
+                    color: Color(0xFFF2B6B3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -62,12 +64,12 @@ class EmergencyContactsPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                           overflow: TextOverflow.ellipsis, // ✅ Cuts text if too long
                         ),
                       ),
-                      Icon(Icons.phone, color: Color.fromARGB(255, 255, 139, 104)),
+                      Icon(Icons.phone, color: Colors.red),
                     ],
                   ),
                 ),
