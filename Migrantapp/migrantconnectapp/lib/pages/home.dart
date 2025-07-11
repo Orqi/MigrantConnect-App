@@ -96,14 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
       ),
       drawer: Drawer(
-        child: ListView(
+        child: Column( // Use Column to place logout at the bottom
           children: [
-            DrawerHeader(child: Image.asset('migrant.jpg'),
+            DrawerHeader(
+              child: Image.asset('migrant.jpg'),
             ),
-             Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Divider(color: Colors.tealAccent,height: 20,),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Divider(color: Colors.tealAccent, height: 20),
+            ),
             ListTile(
               leading: Icon(Icons.person),
               title: Text('Profile'),
@@ -116,12 +117,12 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Help'),
               onTap: () {},
             ),
-             ListTile(
+            ListTile(
               leading: Icon(Icons.work),
               title: Text('Find Jobs'),
               onTap: () {},
             ),
-             ListTile(
+            ListTile(
               leading: Icon(Icons.house),
               title: Text('Find Accommodation'), // Corrected typo
               onTap: () {},
@@ -132,13 +133,28 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyContactsPage()));
               },
-            )
-            
-          ]
-
+            ),
+            Spacer(), // Use Spacer to push the logout button to the bottom
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: _handleLogout,
+                icon: const Icon(Icons.logout),
+                label: const Text('Logout'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50), // Make the button full width
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  textStyle: const TextStyle(fontSize: 18),
+                  elevation: 5,
+                  shadowColor: Colors.redAccent.withOpacity(0.4),
+                ),
+              ),
+            ),
+          ],
         ),
-        ),
-
+      ),
       body: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
@@ -152,20 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 30),
                   // Removed the ElevatedButton.icon for 'View Profile' from here
-                  ElevatedButton.icon(
-                    onPressed: _handleLogout,
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Logout'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      textStyle: const TextStyle(fontSize: 18),
-                      elevation: 5,
-                      shadowColor: Colors.redAccent.withOpacity(0.4),
-                    ),
-                  ),
+                  // The logout button is now in the drawer
                 ],
               ),
       ),
