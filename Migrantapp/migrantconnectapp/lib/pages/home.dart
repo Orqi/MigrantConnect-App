@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
-import 'package:migrantconnectapp/main.dart'; // Import main.dart to access MyApp
+import 'package:migrantconnectapp/main.dart';
 import 'package:migrantconnectapp/pages/emergencycontacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:migrantconnectapp/map.dart'; // Import the MapPage
-import 'package:flutter_map/flutter_map.dart'; // Import flutter_map for the preview
-import 'package:latlong2/latlong.dart'; // Import latlong2 for LatLng
-// No longer need to import 'jobmarket.dart' if navigating by named route directly
-// import 'package:migrantconnectapp/jobmarket.dart'; // This import can be removed if not directly instantiating JobMarketPage
-import 'package:migrantconnectapp/l10n/app_localizations.dart'; // Import AppLocalizations
+import 'package:migrantconnectapp/map.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:migrantconnectapp/l10n/app_localizations.dart';
 import 'package:migrantconnectapp/pages/Laws/Lawsandschemes.dart';
+
+// --- Custom Color Definitions ---
+const Color kcPrimary = Color(0xFF0D3466); // Dark Blue
+const Color kcSecondary = Color(0xFF133764); // Slightly lighter dark blue
+const Color kcAccentLight = Color(0xFF788DA0); // Greyish blue
+const Color kcCardLight = Color(0xFFFECBCC); // Light pink/peach for card backgrounds
+const Color kcCardLighter = Color(0xFFF2B6B3); // Slightly darker pink for gradients
+const Color kcWhite = Colors.white;
+const Color kcCoralPink = Color(0xFFF78E8C); // Retain if needed elsewhere, but not for this animation
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadUserEmail();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _loadUserEmail() async {
     setState(() {
       _isLoading = true;
@@ -40,20 +52,16 @@ class _HomeScreenState extends State<HomeScreen> {
           _userEmail = userMetadata.email;
         });
       } else {
-        // If not logged in, navigate to login page
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
       }
     } catch (e) {
-      // Print error for debugging
       print('Error loading user email for home screen: $e');
       if (mounted) {
-        // Show a snackbar with the error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error loading user data: $e')),
         );
-        // Navigate to login page on error
         Navigator.of(context).pushReplacementNamed('/login');
       }
     } finally {
@@ -68,29 +76,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
     });
     try {
-      // Perform Magic SDK logout
       await magic.user.logout();
-
-      // Remove user email from shared preferences if it exists
       final prefs = await SharedPreferences.getInstance();
       if (_userEmail != null) {
         await prefs.remove(_userEmail!);
       }
       setState(() {
-        _userEmail = null; // Clear user email state
+        _userEmail = null;
       });
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Logged out successfully.')),
       );
-      // Navigate to login page after logout
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
-      // Show error message if logout fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error during logout: $e')),
       );
-      print('Logout error: $e'); // Print error for debugging
+      print('Logout error: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -98,13 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Language switch dialog logic
   void _showLanguagePickerDialog() {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.changeLanguage), // Use localized string
+          title: Text(AppLocalizations.of(context)!.changeLanguage),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: AppLocalizations.supportedLocales.map((locale) {
@@ -122,9 +123,8 @@ class _HomeScreenState extends State<HomeScreen> {
               return ListTile(
                 title: Text(languageName),
                 onTap: () {
-                  // Set the new locale using the static method from MyApp
                   MyApp.of(context)?.setLocale(locale);
-                  Navigator.of(dialogContext).pop(); // Close the dialog
+                  Navigator.of(dialogContext).pop();
                 },
               );
             }).toList(),
@@ -136,22 +136,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Access localized strings
     final appLocalizations = AppLocalizations.of(context)!;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double cardHeight = 110;
+    final double cardWidth = (screenWidth - (16.0 * 2 + 15)) / 2;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(appLocalizations.welcomeMessage), // Use localized title
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+        title: Text(
+          appLocalizations.welcomeMessage,
+          style: TextStyle(color: kcWhite, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: kcPrimary,
+        foregroundColor: kcWhite,
         elevation: 4,
         centerTitle: true,
         actions: [
-          // Language Switch Icon
           IconButton(
             icon: const Icon(Icons.language),
-            onPressed: _showLanguagePickerDialog, // Call the dialog function
-            tooltip: appLocalizations.changeLanguage, // Localized tooltip
+            onPressed: _showLanguagePickerDialog,
+            tooltip: appLocalizations.changeLanguage,
+            color: kcWhite,
           ),
         ],
       ),
@@ -159,78 +164,59 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             DrawerHeader(
-              // Assuming 'migrant.jpg' is in your assets
-              child: Image.asset('migrant.jpg'),
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: kcPrimary,
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Image.asset(
+                  'assets/migrant.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25),
-              child: Divider(color: Colors.tealAccent, height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Divider(color: kcAccentLight.withOpacity(0.5), height: 20),
             ),
             ListTile(
-              leading: const Icon(Icons.person),
-              title: Text(appLocalizations.profile), // Localized
+              leading: Icon(Icons.person, color: kcSecondary),
+              title: Text(appLocalizations.profile, style: TextStyle(color: kcSecondary)),
               onTap: () {
                 Navigator.of(context).pushNamed('/profile');
               },
             ),
             ListTile(
-              leading: const Icon(Icons.help),
-              title: Text(appLocalizations.help), // Localized
+              leading: Icon(Icons.help, color: kcSecondary),
+              title: Text(appLocalizations.help, style: TextStyle(color: kcSecondary)),
               onTap: () {
-                // TODO: Implement help page navigation
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Help page not yet implemented.')),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.work),
-              title: Text(appLocalizations.findJobs), // Localized
-              onTap: () {
-                // *** IMPORTANT CHANGE HERE ***
-                // Navigate using the named route defined in main.dart
-                Navigator.pushNamed(context, '/job_market_page');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.house),
-              title: Text(appLocalizations.findAccommodation), // Localized
-              onTap: () {
-                // TODO: Implement find accommodation page navigation
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Accommodation page not yet implemented.')),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.phone),
-              title: Text(appLocalizations.emergencyContacts), // Localized
+              leading: Icon(Icons.phone, color: kcSecondary),
+              title: Text(appLocalizations.emergencyContacts, style: TextStyle(color: kcSecondary)),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => EmergencyContactsPage()),
+                  MaterialPageRoute(builder: (context) => EmergencyContactsPage()),
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.article),
-              title: const Text('Laws and Schemes'), // Corrected typo
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> LawsandschemesPage()));
-              },
-            ),
-
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: _handleLogout,
                 icon: const Icon(Icons.logout),
-                label: Text(appLocalizations.logout), // Localized
+                label: Text(appLocalizations.logout),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
+                  foregroundColor: kcWhite,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -245,105 +231,317 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: _isLoading
-            ? const CircularProgressIndicator()
-            : Padding(
+            ? const CircularProgressIndicator(color: kcPrimary)
+            : SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    width: double.infinity,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.teal.shade50, Colors.teal.shade200],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 15,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MapPage()),
-                        );
-                      },
-                      child: Stack(
-                        children: [
-                          FlutterMap(
-                            options: const MapOptions(
-                              initialCenter: LatLng(10.0, 76.0),
-                              initialZoom: 6.5,
-                              interactionOptions: InteractionOptions(flags: InteractiveFlag.none),
-                            ),
-                            children: [
-                              TileLayer(
-                                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                subdomains: const ['a', 'b', 'c'],
-                                userAgentPackageName: 'com.migrantconnectapp',
-                              ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    point: const LatLng(10.1, 76.1),
-                                    width: 30,
-                                    height: 30,
-                                    child: const Icon(Icons.location_pin, color: Colors.red, size: 30),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.map_outlined,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    appLocalizations.viewMap, // Localized
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 3.0,
-                                          color: Colors.black54,
-                                          offset: Offset(1.0, 1.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                child: Column(
+                  children: [
+                    // --- Shimmering Gradient Animation ---
+                    Container(
+                      height: 60, // Increased height for a "fatter" look
+                      margin: const EdgeInsets.symmetric(vertical: 0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15), // Slightly more rounded
+                        boxShadow: [
+                          BoxShadow(
+                            color: kcPrimary.withOpacity(0.3), // Darker shadow
+                            blurRadius: 15, // More blur
+                            spreadRadius: 2,
+                            offset: const Offset(0, 8), // More pronounced shadow
                           ),
                         ],
                       ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15), // Match outer border radius
+                        child: const _ShimmeringGradientAnimation(), // Our custom animation widget
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 15),
+
+                    // Map Preview Card
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [kcPrimary.withOpacity(0.8), kcSecondary.withOpacity(0.8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kcSecondary.withOpacity(0.4),
+                              blurRadius: 15,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MapPage()),
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              FlutterMap(
+                                options: const MapOptions(
+                                  initialCenter: LatLng(10.0, 76.0),
+                                  initialZoom: 6.5,
+                                  interactionOptions: InteractionOptions(flags: InteractiveFlag.none),
+                                ),
+                                children: [
+                                  TileLayer(
+                                    urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                    subdomains: const ['a', 'b', 'c'],
+                                    userAgentPackageName: 'com.migrantconnectapp',
+                                  ),
+                                  MarkerLayer(
+                                    markers: [
+                                      Marker(
+                                        point: const LatLng(10.1, 76.1),
+                                        width: 30,
+                                        height: 30,
+                                        child: const Icon(Icons.location_pin, color: Colors.red, size: 30),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.map_outlined,
+                                        color: kcWhite,
+                                        size: 45,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        appLocalizations.viewMap,
+                                        style: const TextStyle(
+                                          color: kcWhite,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 4.0,
+                                              color: Colors.black87,
+                                              offset: Offset(1.0, 1.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Stacked Job and Accommodation Cards with Farmer Image
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // Find Jobs Card
+                              _buildFeatureCard(
+                                context: context,
+                                title: appLocalizations.findJobs,
+                                icon: Icons.work,
+                                width: cardWidth,
+                                height: cardHeight,
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/job_market_page');
+                                },
+                              ),
+                              const SizedBox(height: 15),
+                              // Find Accommodation Card
+                              _buildFeatureCard(
+                                context: context,
+                                title: appLocalizations.findAccommodation,
+                                icon: Icons.house,
+                                width: cardWidth,
+                                height: cardHeight,
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Accommodation page not yet implemented.')),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        // Farmer Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            'assets/farm.png',
+                            width: screenWidth * 0.35,
+                            height: cardHeight * 2 + 15,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Laws and Schemes Card
+                    _buildFeatureCard(
+                      context: context,
+                      title: 'Laws and Schemes',
+                      icon: Icons.article,
+                      width: double.infinity,
+                      height: cardHeight,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => LawsandschemesPage()));
+                      },
+                    ),
+                  ],
                 ),
               ),
       ),
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+    required double width,
+    required double height,
+  }) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: width,
+          height: height,
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [kcCardLight, kcCardLighter],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: kcCardLighter.withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 1,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 35, color: kcSecondary),
+              const SizedBox(height: 5),
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: kcPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- New StatefulWidget for the Shimmering Gradient Animation ---
+class _ShimmeringGradientAnimation extends StatefulWidget {
+  const _ShimmeringGradientAnimation({super.key});
+
+  @override
+  State<_ShimmeringGradientAnimation> createState() => _ShimmeringGradientAnimationState();
+}
+
+class _ShimmeringGradientAnimationState extends State<_ShimmeringGradientAnimation> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _gradientPositionAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 4), // Slightly slower shimmer for elegance
+      vsync: this,
+    )..repeat();
+
+    _gradientPositionAnimation = Tween<double>(
+      begin: -2.0, // Start further off-screen left
+      end: 2.0,    // End further off-screen right, for a longer sweep
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.linear,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _gradientPositionAnimation,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              // Using a richer set of colors from your palette for a deeper shimmer
+              colors: [
+                kcPrimary, // Deep blue
+                kcSecondary.withOpacity(0.9), // Lighter dark blue, almost the highlight
+                kcAccentLight.withOpacity(0.7), // The actual shimmering highlight
+                kcSecondary.withOpacity(0.9),
+                kcPrimary,
+              ],
+              // Adjusted stops to control the spread and sharpness of the highlight
+              stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
+              begin: Alignment(_gradientPositionAnimation.value, 0.0),
+              end: Alignment(_gradientPositionAnimation.value + 1.0, 0.0), // Wider shimmer band
+            ),
+          ),
+        );
+      },
     );
   }
 }
