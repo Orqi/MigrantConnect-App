@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchUserProfileFromBackend(String email) async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.91.140.69/user-profile?email=$email'),
+        Uri.parse('http://10.91.140.69:5001/user-profile?email=$email'),
         headers: {'Content-Type': 'application/json'},
       );
 
