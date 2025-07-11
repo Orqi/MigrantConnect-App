@@ -29,6 +29,10 @@ class EmergencyContactsPage extends StatelessWidget {
       appBar: AppBar(
        title: Text(
           'Emergency Contacts',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold
+          ),
           
         ),
         backgroundColor: Color.fromARGB(255, 1, 116, 93),
