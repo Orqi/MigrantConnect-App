@@ -124,6 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Find Accomodation'),
               onTap: () {},
             ),
+            ListTile(
+              leading: Icon(Icons.phone),
+              title: Text('Emergency Contacts'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyContactsPage()));
+              },
+            )
             
           ]
              
