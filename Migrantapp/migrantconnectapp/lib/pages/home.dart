@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart'; // Import latlong2 for LatLng
 // No longer need to import 'jobmarket.dart' if navigating by named route directly
 // import 'package:migrantconnectapp/jobmarket.dart'; // This import can be removed if not directly instantiating JobMarketPage
 import 'package:migrantconnectapp/l10n/app_localizations.dart'; // Import AppLocalizations
+import 'package:migrantconnectapp/pages/Laws/Lawsandschemes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -212,6 +213,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.article),
+              title: const Text('Laws and Schemes'), // Corrected typo
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> LawsandschemesPage()));
+              },
+            ),
+
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(16.0),

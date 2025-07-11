@@ -1,3 +1,4 @@
+// lib/main.dart (No changes needed here, just confirming it's correct)
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:magic_sdk/magic_sdk.dart';
@@ -84,7 +85,6 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en'), // English
         Locale('hi'), // Hindi
-        // Locale('ml'), // REMOVED Malayalam
       ],
       locale: _locale, // <--- Use the state-managed locale here
 
@@ -96,9 +96,9 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/map': (context) => const MapPage(),
-        '/job_market_page': (context) => const JobMarketPage(), // <--- Add this new route for your Job Market
-        '/landowner': (context) => const LandOwnerPage(), // Add this if LandOwnerPage is not directly navigable from JobMarketPage's routes
-        '/job_details': (context) => JobDetailsPage( // Add this if JobDetailsPage is not directly navigable from JobMarketPage's routes
+        '/job_market_page': (context) => const JobMarketPage(), // <--- Correctly referencing JobMarketPage
+        '/landowner': (context) => const LandOwnerPage(),
+        '/job_details': (context) => JobDetailsPage(
               job: ModalRoute.of(context)!.settings.arguments as Job,
             ),
       },

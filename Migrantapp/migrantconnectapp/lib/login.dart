@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:magic_sdk/magic_sdk.dart';
-import 'package:magic_sdk/modules/user/user_response_type.dart';
 import 'package:migrantconnectapp/main.dart';
 
 class LoginScreen extends StatefulWidget {
