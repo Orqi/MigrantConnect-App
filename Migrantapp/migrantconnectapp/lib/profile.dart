@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:magic_sdk/modules/user/user_response_type.dart';
-import 'package:migrantconnectapp/main.dart';
+import 'package:migrantconnectapp/main.dart'; // Assuming this imports `magic` instance
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -25,6 +25,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final TextEditingController _nameController = TextEditingController();
 
+  // Define colors from the palette
+  static const Color primaryColor = Color(0xFF133764); // Dark Blue
+  static const Color accentColor = Color(0xFFF2B6B3); // Light Coral
+  static const Color lightBackground = Color(0xFFFECBCC); // Light Pink
+  static const Color secondaryColor = Color(0xFF0D3466); // Even Darker Blue
+  static const Color greyText = Color(0xFF788DA0); // Muted Blue-Grey
+
   @override
   void initState() {
     super.initState();
@@ -37,10 +44,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  
   Future<void> _checkLoginStatusAndRegistration() async {
     setState(() {
-      _isLoading = true; 
+      _isLoading = true;
     });
     try {
       final isLoggedIn = await magic.user.isLoggedIn();
@@ -62,11 +68,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           });
           _showMessage('Loaded profile from local cache.');
         } else {
-          _showMessage('Profile not found locally, attempting to fetch from backend...');
+          _showMessage(
+              'Profile not found locally, attempting to fetch from backend...');
           await _fetchUserProfileFromBackend(userMetadata.email!);
         }
       } else {
-      
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
@@ -75,11 +81,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error checking login status or fetching profile: $e');
       _showMessage('Error: Could not load profile. Please try again.');
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/login'); 
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     } finally {
       setState(() {
-        _isLoading = false; 
+        _isLoading = false;
       });
     }
   }
@@ -106,7 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
           _showMessage('✅ Profile fetched from backend and saved locally!');
         } else {
-          _showMessage('No registered profile found on backend for this email (invalid data).');
+          _showMessage(
+              'No registered profile found on backend for this email (invalid data).');
           setState(() {
             _isRegistered = false;
           });
@@ -117,7 +124,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _isRegistered = false;
         });
       } else {
-        _showMessage('❌ Failed to fetch profile from backend: ${response.statusCode}');
+        _showMessage(
+            '❌ Failed to fetch profile from backend: ${response.statusCode}');
         print('Backend fetch error: ${response.statusCode} - ${response.body}');
         setState(() {
           if (!_isRegistered) {
@@ -181,8 +189,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return ipfsUrl;
       } else {
         final errorBody = await response.stream.bytesToString();
-        _showMessage('❌ Error uploading to backend: ${response.statusCode} - $errorBody');
-        print('Error uploading to backend: ${response.statusCode} - $errorBody');
+        _showMessage(
+            '❌ Error uploading to backend: ${response.statusCode} - $errorBody');
+        print(
+            'Error uploading to backend: ${response.statusCode} - $errorBody');
         return null;
       }
     } catch (e) {
@@ -229,8 +239,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           print('Backend error: ${data['error']}');
         }
       } else {
-        _showMessage('❌ Failed to register identity: ${response.statusCode} - ${response.body}');
-        print('Failed to register identity: ${response.statusCode} - ${response.body}');
+        _showMessage(
+            '❌ Failed to register identity: ${response.statusCode} - ${response.body}');
+        print(
+            'Failed to register identity: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       _showMessage('❌ Error calling backend: $e');
@@ -303,31 +315,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Profile'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: primaryColor, // Use primary color
         foregroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: _isLoading
-                  ? const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(color: Colors.blueAccent),
-                        SizedBox(height: 16),
-                        Text('Processing...', style: TextStyle(fontSize: 18, color: Colors.blueGrey)),
-                      ],
-                    )
-                  : _user == null
-                      ? const Text("User not logged in. Redirecting...")
-                      : _buildProfileUI(),
+      body: Container(
+        color: lightBackground, // Set background color for the entire body
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              color: Colors.white, // Card background white for contrast
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: _isLoading
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                              color: primaryColor), // Use primary color
+                          const SizedBox(height: 16),
+                          Text('Processing...',
+                              style: TextStyle(
+                                  fontSize: 18, color: greyText)), // Use greyText
+                        ],
+                      )
+                    : _user == null
+                        ? Text("User not logged in. Redirecting...",
+                            style: TextStyle(color: greyText)) // Use greyText
+                        : _buildProfileUI(),
+              ),
             ),
           ),
         ),
@@ -342,7 +363,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           'Profile Details',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green[700]),
+          style: TextStyle(
+              fontSize: 28, fontWeight: FontWeight.bold, color: primaryColor), // Use primary color
         ),
         const SizedBox(height: 10),
         Text(
@@ -352,26 +374,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Text(
           'Public Address: ${_user?.publicAddress ?? 'N/A'}',
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
+          style: TextStyle(fontSize: 14, color: greyText), // Use greyText
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        _isRegistered
-            ? _buildRegisteredUserUI()
-            : _buildRegistrationForm(),
+        _isRegistered ? _buildRegisteredUserUI() : _buildRegistrationForm(),
         const SizedBox(height: 20),
         ElevatedButton.icon(
           onPressed: _handleLogout,
           icon: const Icon(Icons.logout),
           label: const Text('Logout'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
-            foregroundColor: Colors.white,
+            backgroundColor: accentColor, // Use accent color
+            foregroundColor: secondaryColor, // Text color for contrast
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 18),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             elevation: 5,
-            shadowColor: Colors.redAccent.withOpacity(0.4),
+            shadowColor: accentColor.withOpacity(0.4),
           ),
         ),
       ],
@@ -383,12 +404,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           'Name: $_name',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.deepPurple),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: secondaryColor), // Use secondary color
         ),
         const SizedBox(height: 15),
-        const Text(
+        Text(
           'Uploaded Image:',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16, color: greyText), // Use greyText
         ),
         const SizedBox(height: 10),
         _imageUrl != null && _imageUrl!.isNotEmpty
@@ -404,15 +428,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 200,
                       height: 200,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: lightBackground.withOpacity(0.5), // Use lightBackground
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey.shade400),
+                        border: Border.all(color: greyText.withOpacity(0.5)), // Use greyText
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                          Text('Image Load Error', style: TextStyle(color: Colors.grey)),
+                          Icon(Icons.broken_image, size: 50, color: greyText), // Use greyText
+                          Text('Image Load Error',
+                              style: TextStyle(color: greyText)), // Use greyText
                         ],
                       ),
                     );
@@ -423,12 +448,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: lightBackground.withOpacity(0.5), // Use lightBackground
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade400),
+                  border: Border.all(color: greyText.withOpacity(0.5)), // Use greyText
                 ),
-                child: const Center(
-                  child: Text('No Image Available', style: TextStyle(color: Colors.grey)),
+                child: Center(
+                  child: Text('No Image Available',
+                      style: TextStyle(color: greyText)), // Use greyText
                 ),
               ),
       ],
@@ -438,9 +464,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildRegistrationForm() {
     return Column(
       children: [
-        const Text(
+        Text(
           'Register Your Identity',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepOrange),
+          style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: primaryColor), // Use primary color
         ),
         const SizedBox(height: 20),
         TextField(
@@ -448,10 +477,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onChanged: (value) => _name = value,
           decoration: InputDecoration(
             labelText: 'Enter your name',
+            labelStyle: TextStyle(color: greyText), // Use greyText
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            prefixIcon: const Icon(Icons.person, color: Colors.deepOrange),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: primaryColor), // Focused border
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: greyText.withOpacity(0.5)), // Enabled border
+            ),
+            prefixIcon: const Icon(Icons.person, color: secondaryColor), // Use secondary color
             filled: true,
-            fillColor: Colors.deepOrange.withOpacity(0.05),
+            fillColor: lightBackground.withOpacity(0.5), // Use lightBackground
           ),
         ),
         const SizedBox(height: 15),
@@ -461,10 +499,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: const Icon(Icons.image),
                 label: const Text('Select Image'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: secondaryColor, // Use secondary color
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   elevation: 3,
                 ),
               )
@@ -482,7 +522,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'Selected: ${_imageFile!.path.split('/').last}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: greyText), // Use greyText
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
@@ -491,10 +531,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: const Icon(Icons.change_circle),
                     label: const Text('Change Image'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      backgroundColor: accentColor, // Use accent color
+                      foregroundColor: secondaryColor, // Text color
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                       elevation: 3,
                     ),
                   ),
@@ -506,13 +548,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: const Icon(Icons.app_registration),
           label: const Text('Register Identity'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
+            backgroundColor: primaryColor, // Use primary color
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 18),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             elevation: 5,
-            shadowColor: Colors.green.withOpacity(0.4),
+            shadowColor: primaryColor.withOpacity(0.4),
           ),
         ),
       ],

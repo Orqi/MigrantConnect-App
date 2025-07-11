@@ -4,7 +4,6 @@ import 'package:migrantconnectapp/login.dart';
 import 'package:migrantconnectapp/home.dart';
 import 'package:migrantconnectapp/profile.dart';
 
-
 final magic = Magic("pk_live_845610B169B276D7");
 
 void main() async {
@@ -28,7 +27,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     magic.user.isLoggedIn().then((isLoggedIn) {
       if (isLoggedIn) {
-       
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _navigatorKey.currentState?.pushReplacementNamed('/home');
         });
@@ -43,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Magic Login Counterpart',
       theme: ThemeData(
         primarySwatch: Colors.blue,
