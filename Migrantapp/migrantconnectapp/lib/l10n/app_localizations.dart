@@ -415,6 +415,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Senior Citizen Helpline'**
   String get contactSeniorCitizenHelpline;
+
+  /// No description provided for @lawsAndSchemes.
+  ///
+  /// In en, this message translates to:
+  /// **'Laws and Schemes'**
+  String get lawsAndSchemes;
 }
 
 class _AppLocalizationsDelegate

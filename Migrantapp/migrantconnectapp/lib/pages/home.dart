@@ -407,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Laws and Schemes Card
                     _buildFeatureCard(
                       context: context,
-                      title: 'Laws and Schemes',
+                      title: appLocalizations.lawsAndSchemes, // Changed to use localization
                       icon: Icons.article,
                       width: double.infinity,
                       height: cardHeight,

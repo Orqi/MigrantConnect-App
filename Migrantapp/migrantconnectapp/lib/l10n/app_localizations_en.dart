@@ -168,4 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactSeniorCitizenHelpline => 'Senior Citizen Helpline';
+
+  @override
+  String get lawsAndSchemes => 'Laws and Schemes';
 }

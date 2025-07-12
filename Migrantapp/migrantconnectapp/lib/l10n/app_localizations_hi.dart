@@ -168,4 +168,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get contactSeniorCitizenHelpline => 'वरिष्ठ नागरिक हेल्पलाइन';
+
+  @override
+  String get lawsAndSchemes => 'कानून और योजनाएँ';
 }
