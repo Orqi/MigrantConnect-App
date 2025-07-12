@@ -419,17 +419,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    Navigator.pushNamed(context, '/translate');
-  },
-  mini: true, // Makes the button smaller
-  backgroundColor: kcPrimary,
-  foregroundColor: kcWhite,
-  tooltip: appLocalizations.changeLanguage,
-  child: const Icon(Icons.translate),
-),
-floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Stack(
+        children: [
+          Positioned(
+            bottom: 16.0,
+            right: 16.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/translate');
+              },
+              mini: true, // Makes the button smaller
+              backgroundColor: kcPrimary,
+              foregroundColor: kcWhite,
+              tooltip: appLocalizations.changeLanguage,
+              child: const Icon(Icons.translate),
+            ),
+          ),
+          Positioned(
+            bottom: 16.0,
+            left: 16.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/wallet');
+              },
+              mini: true, // Makes the button smaller
+              backgroundColor: kcPrimary, // Set to kcCoralPink
+              foregroundColor: kcWhite,
+              tooltip: 'Wallet',
+              child: const Icon(Icons.wallet),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat, // This aligns the right button
     );
   }
 
