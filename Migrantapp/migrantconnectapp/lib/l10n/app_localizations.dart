@@ -197,7 +197,7 @@ abstract class AppLocalizations {
   /// No description provided for @areYouALandOwner.
   ///
   /// In en, this message translates to:
-  /// **'Are you a Land Owner?'**
+  /// **'Are you an Employer?'**
   String get areYouALandOwner;
 
   /// No description provided for @jobTypeAgriculture.

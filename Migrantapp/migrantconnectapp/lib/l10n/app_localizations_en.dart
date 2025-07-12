@@ -58,7 +58,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posted => 'Posted';
 
   @override
-  String get areYouALandOwner => 'Are you a Land Owner?';
+  String get areYouALandOwner => 'Are you an Employer?';
 
   @override
   String get jobTypeAgriculture => 'Agriculture';
