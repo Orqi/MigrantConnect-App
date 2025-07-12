@@ -8,6 +8,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:migrantconnectapp/l10n/app_localizations.dart';
 import 'package:migrantconnectapp/pages/Laws/Lawsandschemes.dart';
+import 'package:migrantconnectapp/voice_assistant.dart'; // Import the VoiceAssistant
+import 'package:permission_handler/permission_handler.dart'; // Import permission_handler
 
 // --- Custom Color Definitions ---
 const Color kcPrimary = Color(0xFF0D3466); // Dark Blue
@@ -28,16 +30,52 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? _userEmail;
   bool _isLoading = false;
+  final VoiceAssistant _voiceAssistant = VoiceAssistant(); // Initialize VoiceAssistant
+  String _recognizedText = ''; // To display recognized text
+  String _aiResponse = ''; // To display AI's response
+  bool _isListening = false; // To manage listening state
+  bool _isAITyping = false; // To show loading state for AI response
 
   @override
   void initState() {
     super.initState();
     _loadUserEmail();
+    _voiceAssistant.initTTS(); // Initialize TTS
+    _requestMicPermission(); // Request microphone permission on init
   }
 
   @override
   void dispose() {
+    _voiceAssistant.stopSpeaking(); // Stop speaking if active
+    _voiceAssistant.stopListening(); // Stop listening if active
     super.dispose();
+  }
+
+  // Method to request microphone permission
+  Future<void> _requestMicPermission() async {
+    final status = await Permission.microphone.request();
+    if (status.isGranted) {
+      print("Mic permission granted");
+    } else if (status.isDenied) {
+      print("Mic permission denied");
+      // Optionally show a dialog to explain why permission is needed
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Microphone permission denied. Voice features may not work.')),
+        );
+      }
+    } else if (status.isPermanentlyDenied) {
+      print("Mic permission permanently denied. Open app settings.");
+      // Optionally direct user to app settings
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Microphone permission permanently denied. Please enable it in app settings.'),
+            action: SnackBarAction(label: 'Settings', onPressed: () => openAppSettings()),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _loadUserEmail() async {
@@ -132,6 +170,97 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  void _toggleListening() async {
+    // Check microphone permission before starting/stopping
+    final micStatus = await Permission.microphone.status;
+    if (!micStatus.isGranted) {
+      // If permission is not granted, request it and return if still not granted
+      await _requestMicPermission();
+      final newMicStatus = await Permission.microphone.status;
+      if (!newMicStatus.isGranted) {
+        print('Microphone permission not granted, cannot start listening.');
+        // Provide visual feedback to the user that permission is required
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Microphone permission is required to use voice assistant.')),
+        );
+        return; // Exit if permission is still not granted
+      }
+    }
+
+    if (_isListening) {
+      _voiceAssistant.stopListening();
+      setState(() {
+        _isListening = false;
+      });
+      // Trigger AI response only if recognized text is not empty after stopping listening
+      if (_recognizedText.isNotEmpty && _recognizedText != 'Listening...') {
+        _getAndSpeakAIResponse(_recognizedText);
+      } else {
+        // If nothing was recognized, clear AI response and recognized text
+        setState(() {
+          _aiResponse = '';
+          _recognizedText = '';
+        });
+        _voiceAssistant.speak("I didn't catch that. Please try again.", "English");
+      }
+    } else {
+      setState(() {
+        _recognizedText = 'Listening...'; // Initial state when mic is pressed
+        _aiResponse = ''; // Clear previous AI response
+        _isListening = true;
+        _isAITyping = false; // Reset AI typing state
+      });
+      final currentLocale = Localizations.localeOf(context);
+      final language = currentLocale.languageCode == 'hi' ? 'Hindi' : 'English';
+      await _voiceAssistant.startListening(
+        (text) {
+          // Callback for partial results
+          setState(() {
+            _recognizedText = text;
+          });
+        },
+        language,
+        onFinalResult: (finalText) {
+          // Callback for final result (triggered automatically by speech_to_text)
+          if (finalText.isNotEmpty) {
+            _getAndSpeakAIResponse(finalText);
+          } else {
+            setState(() {
+              _aiResponse = "I didn't hear anything. Please try again.";
+              _recognizedText = '';
+            });
+            _voiceAssistant.speak("I didn't catch that. Please try again.", "English");
+          }
+          setState(() {
+            _isListening = false; // Update local state when VoiceAssistant reports final result
+          });
+        },
+      );
+    }
+  }
+
+  Future<void> _getAndSpeakAIResponse(String prompt) async {
+    if (prompt.isEmpty) {
+      _voiceAssistant.speak("Please say something.", "English"); // Default to English for this prompt
+      setState(() {
+        _aiResponse = "I didn't hear anything. Please try again.";
+      });
+      return;
+    }
+    setState(() {
+      _isAITyping = true; // Show loading indicator for AI
+      _aiResponse = 'AI is thinking...';
+    });
+    final currentLocale = Localizations.localeOf(context);
+    final language = currentLocale.languageCode == 'hi' ? 'Hindi' : 'English';
+    final response = await _voiceAssistant.getAIResponse(prompt, language);
+    setState(() {
+      _aiResponse = response;
+      _isAITyping = false; // Hide loading indicator
+    });
+    _voiceAssistant.speak(response, language);
   }
 
   @override
@@ -259,6 +388,89 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 15),
 
+                    // Voice Assistant UI Feedback
+                    if (_isListening || _recognizedText.isNotEmpty || _aiResponse.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(12.0),
+                        margin: const EdgeInsets.only(bottom: 15.0),
+                        decoration: BoxDecoration(
+                          color: kcPrimary.withOpacity(0.05), // Light background for the box
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: kcPrimary.withOpacity(0.2)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (_isListening)
+                              Center(
+                                child: Text(
+                                  _recognizedText,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: kcPrimary,
+                                  ),
+                                ),
+                              )
+                            else if (_recognizedText.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'You said:',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: kcAccentLight,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _recognizedText,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: kcSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (_isAITyping)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Center(
+                                  child: CircularProgressIndicator(color: kcPrimary),
+                                ),
+                              )
+                            else if (_aiResponse.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'AI Response:',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: kcAccentLight,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _aiResponse,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: kcPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    // End Voice Assistant UI Feedback
+                    
                     // Map Preview Card
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
@@ -421,29 +633,55 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: Stack(
         children: [
+          // Main Voice Assistant Button - Prominent and centered at the bottom
           Positioned(
-            bottom: 16.0,
+            bottom: 16.0, // Place it at the very bottom
+            left: 16.0,   // Extend from left
+            right: 16.0,  // Extend to right
+            child: SizedBox( // Use SizedBox to control width and height
+              height: 60.0, // Make it a bit taller
+              child: FloatingActionButton.extended(
+                onPressed: _toggleListening,
+                backgroundColor: _isListening ? Colors.red.shade700 : kcPrimary, // Deeper red when listening
+                foregroundColor: kcWhite,
+                heroTag: 'voiceAssistantBtn', // Unique tag
+                label: Text(
+                  _isListening ? 'STOP LISTENING' : 'START VOICE ASSISTANT',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                icon: Icon(_isListening ? Icons.mic_off : Icons.mic, size: 28), // Slightly larger icon
+                elevation: 10, // More prominent shadow
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)), // More rounded corners
+              ),
+            ),
+          ),
+
+          // Translate Button - Positioned above and to the right
+          Positioned(
+            bottom: 90.0, // Adjust position to be above the main button
             right: 16.0,
             child: FloatingActionButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/translate');
               },
-              mini: true, // Makes the button smaller
+              mini: true, // Keep it smaller
               backgroundColor: kcPrimary,
               foregroundColor: kcWhite,
               tooltip: appLocalizations.changeLanguage,
               child: const Icon(Icons.translate),
             ),
           ),
+
+          // Wallet Button - Positioned above and to the left
           Positioned(
-            bottom: 16.0,
+            bottom: 90.0, // Adjust position to be above the main button
             left: 16.0,
             child: FloatingActionButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/wallet');
               },
-              mini: true, // Makes the button smaller
-              backgroundColor: kcPrimary, // Set to kcCoralPink
+              mini: true, // Keep it smaller
+              backgroundColor: kcPrimary,
               foregroundColor: kcWhite,
               tooltip: 'Wallet',
               child: const Icon(Icons.wallet),
