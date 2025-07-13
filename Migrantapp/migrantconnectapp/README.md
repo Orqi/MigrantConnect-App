@@ -1,16 +1,56 @@
-# migrantconnectapp
+# MigrantConnect
 
-A new Flutter project.
+## Infosys Global Hackathon  
+**Challenge Statement 16: Migrant Connect**
 
-## Getting Started
+India is home to over 450 million internal migrant workers who often move across state borders in search of work. However, this mobility comes at a cost. It disrupts their access to essential public services like healthcare, education, financial aid, and social welfare programs.  
 
-This project is a starting point for a Flutter application.
+These migrant workers encounter several barriers:
+- Lack of portable digital identity and documents across states  
+- Language and literacy barriers that limit access to digital platforms  
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Team Details  
+**Team Name:** Team Rocket  
+**Team Leader:** Meera R S  
+**Team Members:** Amrita Reji, Vidya S R 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Problem Statement  
+**MigrantConnect: Portable Services for Mobile Workers**  
+A portable digital ID platform that unlocks essential services for migrants—anywhere, anytime, in any language.
+
+---
+
+## Features
+
+- Blockchain storage of identity  
+- Multi language support  
+- Maps to find healthcare and essential services  
+- Emergency contacts for migrants  
+- Job finder  
+- Accommodation finder  
+- Laws and schemes in multiple languages  
+- Document wallet  
+- Document scanner and auto translator  
+
+---
+
+## Tech Stack
+
+- Hardhat  
+- Amoy Testnet  
+- Pinata + IPFS  
+- Alchemy  
+- Magic.link  
+- Supabase  
+- Express / Node.js (Server)  
+- Render (Deployment)  
+- Synchronized React web and Flutter app  
+
+---
+
+## Demo  
+[Watch the demo video on YouTube](https://youtu.be/Nktm-7MiaKw?si=LXdaUV6LS0fCVYof)
