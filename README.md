@@ -1,3 +1,5 @@
+⚠️ Note: This project was built for a hackathon. The `.env` file contains non-sensitive, disposable keys and is left public intentionally. Do not reuse these values.
+
 # MigrantConnect
 
 ## Infosys Global Hackathon  
